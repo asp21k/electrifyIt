@@ -18,7 +18,7 @@ mongoose.connect(connectionString, {
 
 // Apply CORS middleware
 app.use(cors({
-  origin: 'https://electrify-it.vercel.app/' // Allow requests from localhost:3000
+  origin: 'https://electrify-it.vercel.app' // Allow requests from localhost:3000
 }));
 
 // Routes (placeholder for now)
