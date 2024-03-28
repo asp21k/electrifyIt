@@ -1,13 +1,13 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const cors = require('cors'); // Import cors package
 
-require('dotenv').config(); // Assuming you're using dotenv for environment variables
+require('dotenv').config();
 
 const app = express();
-const port = process.env.PORT || 3000; // Use environment variable for port or default to 3000
+const port = process.env.PORT || 3000;
 
-
-const connectionString = process.env.MONGODB_URI ; // Local fallback for development
+const connectionString = process.env.MONGODB_URI;
 mongoose.connect(connectionString, {
     dbName: process.env.DB_NAME,
     useNewUrlParser: true,
@@ -16,8 +16,10 @@ mongoose.connect(connectionString, {
 .then(() => console.log('MongoDB connected successfully'))
 .catch(error => console.error('MongoDB connection error:', error));
 
-
-
+// Apply CORS middleware
+app.use(cors({
+  origin: 'http://localhost:3000' // Allow requests from localhost:3000
+}));
 
 // Routes (placeholder for now)
 app.get('/', (req, res) => {
@@ -29,7 +31,9 @@ app.use((err, req, res, next) => {
     console.error(err.stack);
     res.status(500).send('Internal Server Error');
 });
+
 app.use('/report', require('./routes/reportRoute'));
+
 app.listen(port, () => {
     console.log(`Server listening on port ${port}`);
 });

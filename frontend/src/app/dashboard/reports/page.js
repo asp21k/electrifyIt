@@ -1,70 +1,55 @@
-import React from "react";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"; // Update with your actual path
-import { DatePickerWithRange } from "@/components/dateRange";
-import DynamicTable from "@/app/components/dynamicTable";
+"use client";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import DynamicTable from "@/app/components/dynamicTable"; // Update with your actual table component
 
 const Reports = () => {
-    const columns = ["Date", "Total Miles Driven", "Energy Consumption", "Cost Analysis"];
-    const rows = [ [ "01/01/2022", "100", "200", "300" ], [ "01/02/2022", "200", "300", "400" ] ];
+  const [reportType, setReportType] = useState("Total-Miles-Driven");
+  const [fdate, setFDate] = useState("");
+  const [fmonth, setFMonth] = useState("");
+  const [fyear, setFYear] = useState("");
+  const [columns, setColumns] = useState([]);
+  const [rows, setRows] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get("https://atharva.centralindia.cloudapp.azure.com/report/data", {
+        params: { reportType, fdate, fmonth, fyear },
+      });
+      console.log("Data fetched:", response.data);
+
+      // Extracting column names
+      const columnNames = Object.keys(response.data[0]);
+      setColumns(columnNames);
+
+      // Extracting rows
+      const dataRows = response.data.map((item) => Object.values(item));
+      setRows(dataRows);
+
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, [reportType, fdate, fmonth, fyear]);
 
   return (
-    <div className="flex flex-col pb-8 h-screen">
+    <div className="flex flex-col pb-8 h-full">
       <h1 className="text-2xl text-left text-white my-8 font-bold">Reports</h1>
-      <div className="flex flex-row space-x-4">
-        {/* Report Type Filter */}
-        <Select className="">
-          <SelectTrigger className="w-[180px] bg-black text-white border-white/15">
-            <SelectValue placeholder="Select Report Type" />
-          </SelectTrigger>
-          <SelectContent className="bg-black text-white border-white/15 ">
-            <SelectGroup>
-              <SelectLabel>Report Type</SelectLabel>
-              <SelectItem value="totalMilesDriven">
-                Total Miles Driven
-              </SelectItem>
-              <SelectItem value="energyConsumption">
-                Energy Consumption
-              </SelectItem>
-              <SelectItem value="costAnalysis">Cost Analysis</SelectItem>
-            </SelectGroup>
-          </SelectContent>
-        </Select>
-
-        {/* Frequency Filter */}
-        <Select className="">
-          <SelectTrigger className="w-[180px] bg-black text-white border-white/15">
-            <SelectValue placeholder="Select Frequency" />
-          </SelectTrigger>
-          <SelectContent className="bg-black text-white border-white/15 ">
-            <SelectGroup>
-              <SelectLabel>Frequency</SelectLabel>
-              <SelectItem value="daily">Daily</SelectItem>
-              <SelectItem value="weekly">Weekly</SelectItem>
-              <SelectItem value="monthly">Monthly</SelectItem>
-              <SelectItem value="yearly">Yearly</SelectItem>
-            </SelectGroup>
-          </SelectContent>
-        </Select>
-
-        <div className="flex flex-col">
-          <DatePickerWithRange />
-        </div>
-
-        {/* Additional Filters */}
-        {/* Here you can add additional select boxes or any other input elements for additional filters */}
-      </div>
+      {/* Your filter components */}
       <div className="grid grid-cols-4 gap-4 mt-8">
-       <DynamicTable rows={rows} columns={columns} />
-
-      </div>    
+        {loading ? (
+          <p>Loading...</p>
+        ) : (
+          <DynamicTable columns={columns} rows={rows} />
+        )}
+      </div>
     </div>
   );
 };

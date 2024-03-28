@@ -2,7 +2,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import SideBar from "./components/sidebar";
 // import  ThemeProvider  from "@/components/themeProvider";
-import {ThemeProvider as NextThemesProvider} from "next-themes";
+import { ThemeProvider as NextThemesProvider } from "next-themes";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -15,7 +15,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={inter.className}>
-        <div className="flex items-center justify-start h-screen">
+        <div className="flex  justify-start h-full">
           <div className="w-1/6">
             <SideBar />
           </div>

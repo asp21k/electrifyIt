@@ -57,7 +57,7 @@ const fetchData = async (req, res) => {
       data = await getCostAnalysisData(filter);
     } else {
       // If report type is not specified or invalid, return all data within the specified time frame and frequency
-      data = await DataModel.find(filter);
+      data = await Data.find(filter);
     }
 
     res.json(data);
