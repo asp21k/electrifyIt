@@ -15,7 +15,7 @@ const Reports = () => {
   const fetchData = async () => {
     try {
       setLoading(true);
-      const response = await axios.get("https://atharva.centralindia.cloudapp.azure.com/report/data", {
+      const response = await axios.get("http://localhost:5050/report/data", {
         params: { reportType, fdate, fmonth, fyear },
       });
       console.log("Data fetched:", response.data);
