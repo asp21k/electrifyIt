@@ -23,7 +23,7 @@ app.use(cors({
 
 // Routes (placeholder for now)
 app.get('/', (req, res) => {
-    res.send('ElectrifyIt Reports Backend API');
+    res.send('ElectrifyIt Reports Backend API v1.2');
 });
 
 // Error handling middleware (add more specific error handling as needed)
