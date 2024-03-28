@@ -1,0 +1,35 @@
+const express = require('express');
+const mongoose = require('mongoose');
+
+require('dotenv').config(); // Assuming you're using dotenv for environment variables
+
+const app = express();
+const port = process.env.PORT || 3000; // Use environment variable for port or default to 3000
+
+
+const connectionString = process.env.MONGODB_URI ; // Local fallback for development
+mongoose.connect(connectionString, {
+    dbName: process.env.DB_NAME,
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+})
+.then(() => console.log('MongoDB connected successfully'))
+.catch(error => console.error('MongoDB connection error:', error));
+
+
+
+
+// Routes (placeholder for now)
+app.get('/', (req, res) => {
+    res.send('ElectrifyIt Reports Backend API');
+});
+
+// Error handling middleware (add more specific error handling as needed)
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).send('Internal Server Error');
+});
+app.use('/report', require('./routes/reportRoute'));
+app.listen(port, () => {
+    console.log(`Server listening on port ${port}`);
+});
