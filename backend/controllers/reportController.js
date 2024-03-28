@@ -1,6 +1,5 @@
 const { FileStreamer } = require("papaparse");
-const Data = require("../models/dataModel");
-
+const Vehicle = require("../models/dataModel"); 
 
 const getAllData = async (req, res) => {
   const pageNo = parseInt(req.query.pageNo);
@@ -9,94 +8,104 @@ const getAllData = async (req, res) => {
     if (pageNo <= 0) {
       return res.status(200).send("Invalid Page No");
     }
-    skip = (pageNo - 1) * size;
-    const report = await Data.find().skip(skip).limit(size);
-    res.status(200).json({ success: true, data: report });
+    const skip = (pageNo - 1) * size;
+    const vehicles = await Vehicle.find().skip(skip).limit(size);
+    res.status(200).json({ success: true, data: vehicles });
   } catch (error) {
     console.log(error);
     res.status(500).json({ success: false, message: "Server Error" });
   }
 };
-// backend/controllers/dataController.js
-
 const fetchData = async (req, res) => {
-
   try {
-    const { reportType, fdate, fmonth, fyear } = req.query;
+    const { reportType, frequency, fromDate, toDate } = req.query;
     console.log(req.query);
+    
+
     let filter = {};
 
-    // Apply time frame filtering
-    if (fdate) {
-      filter.createdAt = {
-        $gte: new Date(fdate),
-        $lt: new Date(new Date(fdate).setDate(new Date(fdate).getDate() + 1)), // Next day
-      };
-    } else if (fmonth) {
-      const [year, month] = fmonth.split("-");
-      filter.createdAt = {
-        $gte: new Date(year, month - 1, 1),
-        $lt: new Date(year, month, 0, 23, 59, 59), // Last day of the month
-      };
-    } else if (fyear) {
-      const year = parseInt(fyear);
-      filter.createdAt = {
-        $gte: new Date(year, 0, 1),
-        $lt: new Date(year + 1, 0, 1), // First day of next year
+    
+    if (fromDate && toDate) {
+      filter.date = {
+        $gte: new Date(fromDate),
+        $lte: new Date(toDate),
       };
     }
-
+    
     let data;
-
-    // Apply report type filtering
-    if (reportType === "Total-Miles-Driven") {
-      data = await getTotalMilesDrivenData(filter);
-    } else if (reportType === "Energy-Consumption") {
-      data = await getEnergyConsumptionData(filter);
-    } else if (reportType === "Cost-Analysis") {
-      data = await getCostAnalysisData(filter);
-    } else {
-      // If report type is not specified or invalid, return all data within the specified time frame and frequency
-      data = await Data.find(filter);
+    
+    data = await Vehicle.find(filter);
+    // console.log(data);
+    let result = {};
+    if (frequency === "daily") {
+      result = aggregateTotalMilesDaily(data);
+    } else if (frequency === "monthly") {
+      result = aggregateTotalMilesMonthly(data);
+    } else if (frequency === "yearly") {
+      result = aggregateTotalMilesYearly(data);
     }
-
-    res.json(data);
+    // console.log(result);
+    if (reportType === "total-miles-driven") {
+      res.json(result);
+    } else if (reportType === "energy-consumption") {
+      Object.keys(result).forEach((date) => {
+        result[date] = result[date] * 0.3;
+      });
+      res.status(200).json({ message: "Energy consumption report", data: result});
+    } else if (reportType === "cost-analysis") {
+      Object.keys(result).forEach((date) => {
+        result[date] = result[date] * 0.3 * 0.1;
+      });
+      res.status(200).json({ message: "Cost analysis report", data: result});
+    } else {
+      res.status(400).json({ message: "Invalid report type" });
+    }
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: error.message, success: false });
   }
 };
 
-async function getTotalMilesDrivenData(filter) {
-    console.log("filter =",{filter});
-    
-  const data = await Data.find(filter, {
-    licensePlate: 1,
-    make: 1,
-    model: 1,
-    vin: 1,
-    type: 1,
-    odometerReading: 1,
-    batteryHealth: 1,
-    _id: 0,
+
+function aggregateTotalMilesDaily(data) {
+  const dailyTotal = {};
+
+   data.forEach((vehicle) => {
+    // console.log(vehicle.date);
+     const date =  vehicle.date.toString().split(" ").slice(0, 4).join(" ");
+    //  console.log("date",vehicle.date.toString());
+    // console.log("date",date);
+    dailyTotal[date] = (dailyTotal[date] || 0) + (vehicle.milesDriven || 0);
+    // console.log(dailyTotal[date]);
   });
-  console.log(data);
-  return data;
+
+  return dailyTotal;
 }
 
-async function getEnergyConsumptionData(filter) {
-  const data = await Data.find(filter).select(
-    "licensePlate trips.energyDelivered"
-  );
-  return data;
+function aggregateTotalMilesMonthly(data) {
+  const monthlyTotal = {};
+
+  data.forEach((vehicle) => {
+    var yearMonth = vehicle.date.toString().split(" ");
+    const year=yearMonth[3];
+    const month=yearMonth[1];
+    yearMonth = year + "-" + month;
+    monthlyTotal[yearMonth] =
+      (monthlyTotal[yearMonth] || 0) + (vehicle.milesDriven || 0);
+  });
+
+  return monthlyTotal;
 }
 
-async function getCostAnalysisData(filter) {
-  // Implement logic for cost analysis based on electricity rates
-  const data = await Data.find(filter).select(
-    "licensePlate trips.energyDelivered"
-  );
-  return data;
+function aggregateTotalMilesYearly(data) {
+  const yearlyTotal = {};
+
+  data.forEach((vehicle) => {
+    const year = vehicle.date.toString().split(" ")[3];
+    yearlyTotal[year] = (yearlyTotal[year] || 0) + (vehicle.milesDriven || 0);
+  });
+
+  return yearlyTotal;
 }
 
-module.exports = { fetchData, getAllData };
+module.exports = { getAllData, fetchData };
