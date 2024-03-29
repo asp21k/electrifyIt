@@ -161,12 +161,13 @@ const Reports = () => {
           filterOn && <DynamicTable columns={data.columns} rows={rows} />
         )}
         {!filterOn && <DynamicTable columns={columns} rows={rows} />}
-        {rows.length === 0 ? (
+        {rows.length === 0 &&(fromDate && toDate) ? (
+          
           <p className="text-xl text-center my-16">
             {" "}
             Select a date range to view data
           </p>
-        ) : null}
+        ) : <p className="text-xl text-center my-16">No data available for the selected date range</p>}
       </div>
     </div>
   );
