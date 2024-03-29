@@ -1,103 +1,62 @@
-Vehicle Data Reporting System
+<h1 align="center" id="title">ElectrifyIT Dashboard</h1>
 
-Project Overview:
+<p id="description">This project consists of a web application for generating reports based on vehicle data. The application is built using a combination of frontend and backend technologies including Next.js with Tailwind CSS for the frontend Node.js with Express for the backend and MongoDB for the database. The frontend is deployed on Vercel while the backend is deployed on an Azure VM. MongoDB Atlas is used for hosting the database.</p>
 
-This project consists of a web application for generating reports based on vehicle data. The application is built using a combination of frontend and backend technologies, including Next.js with Tailwind CSS for the frontend, Node.js with Express for the backend, and MongoDB for the database. The frontend is deployed on Vercel, while the backend is deployed on an Azure VM. MongoDB Atlas is used for hosting the database.
+<h2>🚀 Demo</h2>
 
-Technology Choices:
+[https://electrify-it.vercel.app/dashboard/reports](https://electrify-it.vercel.app/dashboard/reports)
 
-Frontend:
-Next.js: Used for building the frontend application due to its server-side rendering capabilities, which enhance performance and SEO.
-Tailwind CSS: Utilized for styling the user interface components due to its utility-first approach and ease of customization.
-Shards UI: A UI framework used for components like select dropdowns and buttons.
-Backend:
-Node.js with Express: Chosen for building the backend server due to its lightweight and efficient nature for handling HTTP requests and routing.
-MongoDB: Selected as the database for its flexibility and scalability, particularly suitable for storing unstructured or semi-structured data like vehicle records.
-Assumptions Made:
+  
+  
+<h2>🧐 Features</h2>
 
-Assumed that the vehicle data is stored in a MongoDB database with fields such as licensePlate, make, model, vin, type, date, and milesDriven.
-Assumed that the fetchData function aggregates data based on date ranges and frequency using custom aggregation functions for daily, monthly, and yearly totals.
-Assumed that the data aggregation functions return an object where keys represent dates or date ranges, and values represent aggregated data.
-Backend Controller Functions:
+Here're some of the project's best features:
 
-getAllData:
+*   Report Generation: Generate reports based on various parameters such as report type frequency and date range. Types of reports include total miles driven energy consumption and cost analysis.
+*   Filtering Options: Select specific report types such as total miles driven energy consumption or cost analysis. Choose the frequency of the report including daily weekly monthly or yearly. Select date ranges using a date picker component for precise filtering.
 
-Description: Retrieves all vehicle data from the database and returns specific fields such as license plate, make, model, VIN, type, date, and miles driven.
-Route: /api/data
-Request Parameters: None
-Response: { success: true, data: [vehicles] }
-fetchData:
+<h2>🛠️ Installation Steps:</h2>
 
-Description: Fetches data based on specified parameters such as report type, frequency, from date, and to date. Aggregates the data according to the selected frequency and calculates the total miles driven, energy consumption, or cost analysis.
-Route: /api/report/data
-Request Parameters: { reportType, frequency, fromDate, toDate }
-Response: { message: "Report Message", data: {reportData}, columns: ["Column1", "Column2", ...] }
-Test Cases:
+<p>1. Clone the repository to your local machine:</p>
 
-Frontend Test Cases:
+```
+git clone https://github.com/asp21k/electrifyIt.git
+```
 
-DatePicker Component:
+<p>2. Install dependencies for both frontend and backend:</p>
 
-Validate correct setting of fromDate and toDate when a date is selected.
-Ensure selected date format matches the required format (YYYY-MM-DD).
-Verify correct rendering and behavior of the DatePicker component.
-Dynamic Table Component:
+```
+cd frontend npm install cd ../backend npm install
+```
 
-Test dynamic rendering of table data based on fetched data from the backend API.
-Validate display of expected columns and rows according to fetched data.
-Verify handling of loading state and error conditions by the table component.
-Backend Test Cases:
+<p>3. Set up environment variables for backend:</p>
 
-getAllData:
+```
+Add .env in backend folder
+```
 
-Test retrieval of all vehicle data from the database.
-Validate response status code, data format, and specific fields returned.
-fetchData:
+<p>4. Start the backend server:</p>
 
-Test fetchData function with various combinations of parameters.
-Validate returned data format matches expected structure for different report types and frequency settings.
-Verify error handling for invalid input parameters and server errors.
-References Used:
-
-Previous chats with the assistant for code implementation guidance.
-Documentation and tutorials provided by Next.js, Tailwind CSS, Express.js, MongoDB, Vercel, and Azure for understanding and implementing specific features and deployment procedures.
-Deployment:
-
-The frontend of the application is deployed on Vercel and can be accessed at https://electrify-it.vercel.app/dashboard/reports.
-
-To Run the Code:
-
-Clone the repository to your local machine:
-
-bash
-Copy code
-git clone <repository_url>
-Navigate to the project directory:
-
-bash
-Copy code
-cd <project_directory>
-Install dependencies for both frontend and backend:
-
-bash
-Copy code
-cd frontend
-npm install
-cd ../backend
-npm install
-Set up environment variables for backend:
-
-Create a .env file in the backend directory.
-Define environment variables such as MongoDB connection string, port, etc.
-Start the backend server:
-
-sql
-Copy code
+```
 npm start
-Start the frontend development server:
+```
 
-bash
-Copy code
-cd ../frontend
-npm run dev
-Access the application in your browser at http://localhost:3000.
+<p>5. Start the frontend server:</p>
+
+```
+cd ../frontend npm run dev
+```
+
+  
+  
+<h2>💻 Built with</h2>
+
+Technologies used in the project:
+
+*   Frontend: Next.js: A React framework for server-side rendering (SSR) and client-side rendering (CSR) applications. Tailwind CSS: A utility-first CSS framework for building custom user interfaces with minimal CSS code. Shards UI: A modern UI toolkit for building responsive web applications with pre-designed components. React: A JavaScript library for building user interfaces. Axios: A promise-based HTTP client for making asynchronous HTTP requests from the browser.
+*   Backend: Node.js: A JavaScript runtime for building scalable and high-performance server-side applications. Express.js: A minimalist web application framework for Node.js used to build RESTful APIs. MongoDB: A NoSQL document-oriented database for storing and managing vehicle data. Mongoose: An Object Data Modeling (ODM) library for MongoDB and Node.js providing a schema-based solution for modeling application data.
+*   Deployment and Hosting: Vercel: A cloud platform for hosting frontend applications providing automatic deployments and seamless scaling. Azure VM: A virtual machine service on Microsoft Azure for hosting and managing backend applications offering scalability and control over server resources.
+
+<h2>💖Like my work?</h2>
+
+Do visit my portfolio @ https://asp21k-portfolio.vercel.app/
