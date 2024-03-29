@@ -17,9 +17,9 @@ import { set } from "date-fns";
 const Reports = () => {
   const [reportType, setReportType] = useState("total-miles-driven");
   const [frequency, setFrequency] = useState("daily");
-  const [fromDate, setFromDate] = useState("");
-  const [toDate, setToDate] = useState("");
-  const [data, setData] = useState({});
+  const [fromDate, setFromDate] = useState();
+  const [toDate, setToDate] = useState();
+  const [data, setData] = useState("select date range");
   const [loading, setLoading] = useState(false);
   const [rows, setRows] = useState([]);
   const [filterOn, setFilterOn] = useState(true);
@@ -163,16 +163,17 @@ const Reports = () => {
           filterOn && <DynamicTable columns={data.columns} rows={rows} />
         )}
         {!filterOn && <DynamicTable columns={columns} rows={rows} />}
-        {rows.length === 0 && fromDate && toDate ? (
-          <p className="text-xl text-center my-16">
-            {" "}
-            Select a date range to view data
-          </p>
-        ) : (
-          <p className="text-xl text-center my-16">
-            No data available for the selected date range
-          </p>
-        )}
+        {rows.length === 0 ? (
+          (fromDate && toDate) ? (
+            <p className="text-xl text-center my-16">
+              Select a date range to view data
+            </p>
+          ) : (
+            <p className="text-xl text-center my-16">
+              No data available for the selected date range. 
+            </p>
+          )
+        ) : null}
       </div>
     </div>
   );
