@@ -17,12 +17,8 @@ import { set } from "date-fns";
 const Reports = () => {
   const [reportType, setReportType] = useState("total-miles-driven");
   const [frequency, setFrequency] = useState("daily");
-  const [fromDate, setFromDate] = useState(
-    "Mon Mar 04 2024 00:00:00 GMT+0530 (India Standard Time)"
-  );
-  const [toDate, setToDate] = useState(
-    "Wed May 22 2024 00:00:00 GMT+0530 (India Standard Time)"
-  );
+  const [fromDate, setFromDate] = useState("");
+  const [toDate, setToDate] = useState("");
   const [data, setData] = useState({});
   const [loading, setLoading] = useState(false);
   const [rows, setRows] = useState([]);
@@ -41,7 +37,10 @@ const Reports = () => {
     try {
       // setLoading(true);
       setFilterOn(false);
-      const response = await axios.get("https://atharva.centralindia.cloudapp.azure.com/report/", {});
+      const response = await axios.get(
+        "https://atharva.centralindia.cloudapp.azure.com/report/",
+        {}
+      );
       console.log("Data fetched:", response.data.data);
       setData(response.data);
       const result = await Object.values(data.data)?.map((item) => [
@@ -68,14 +67,17 @@ const Reports = () => {
       const fromDateFormatted = handleFormatDate(fromDate);
       const toDateFormatted = handleFormatDate(toDate);
       setLoading(true);
-      const response = await axios.get("https://atharva.centralindia.cloudapp.azure.com/report/data", {
-        params: {
-          reportType,
-          frequency,
-          fromDate: fromDateFormatted,
-          toDate: toDateFormatted,
-        },
-      });
+      const response = await axios.get(
+        "https://atharva.centralindia.cloudapp.azure.com/report/data",
+        {
+          params: {
+            reportType,
+            frequency,
+            fromDate: fromDateFormatted,
+            toDate: toDateFormatted,
+          },
+        }
+      );
       console.log("Data fetched:", response.data.data);
       setData(response.data);
       const result = [];
@@ -161,13 +163,16 @@ const Reports = () => {
           filterOn && <DynamicTable columns={data.columns} rows={rows} />
         )}
         {!filterOn && <DynamicTable columns={columns} rows={rows} />}
-        {rows.length === 0 &&(fromDate && toDate) ? (
-          
+        {rows.length === 0 && fromDate && toDate ? (
           <p className="text-xl text-center my-16">
             {" "}
             Select a date range to view data
           </p>
-        ) : <p className="text-xl text-center my-16">No data available for the selected date range</p>}
+        ) : (
+          <p className="text-xl text-center my-16">
+            No data available for the selected date range
+          </p>
+        )}
       </div>
     </div>
   );
