@@ -141,7 +141,7 @@ const Reports = () => {
             <SelectGroup>
               <SelectLabel>Frequency</SelectLabel>
               <SelectItem value="daily">Daily</SelectItem>
-              <SelectItem value="weekly">Weekly</SelectItem>
+
               <SelectItem value="monthly">Monthly</SelectItem>
               <SelectItem value="yearly">Yearly</SelectItem>
             </SelectGroup>
@@ -164,13 +164,13 @@ const Reports = () => {
         )}
         {!filterOn && <DynamicTable columns={columns} rows={rows} />}
         {rows.length === 0 ? (
-          (fromDate && toDate) ? (
+          fromDate && toDate ? (
             <p className="text-xl text-center my-16">
               Select a date range to view data
             </p>
           ) : (
             <p className="text-xl text-center my-16">
-              No data available for the selected date range. 
+              No data available for the selected date range.
             </p>
           )
         ) : null}
