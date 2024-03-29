@@ -1,15 +1,22 @@
 const { FileStreamer } = require("papaparse");
-const Vehicle = require("../models/dataModel"); 
+const Vehicle = require("../models/dataModel");
 
 const getAllData = async (req, res) => {
-  const pageNo = parseInt(req.query.pageNo);
-  const size = parseInt(req.query.size);
   try {
-    if (pageNo <= 0) {
-      return res.status(200).send("Invalid Page No");
-    }
-    const skip = (pageNo - 1) * size;
-    const vehicles = await Vehicle.find().skip(skip).limit(size);
+    const vehicles = await Vehicle.find(
+      {},
+      {
+        licensePlate: 1,
+        make: 1,
+        model: 1,
+        vin: 1,
+        type: 1,
+        date: 1,
+        milesDriven: 1,
+        _id: 0,
+      }
+    );
+
     res.status(200).json({ success: true, data: vehicles });
   } catch (error) {
     console.log(error);
@@ -20,20 +27,18 @@ const fetchData = async (req, res) => {
   try {
     const { reportType, frequency, fromDate, toDate } = req.query;
     console.log(req.query);
-    
 
     let filter = {};
 
-    
     if (fromDate && toDate) {
       filter.date = {
         $gte: new Date(fromDate),
         $lte: new Date(toDate),
       };
     }
-    
+
     let data;
-    
+
     data = await Vehicle.find(filter);
     // console.log(data);
     let result = {};
@@ -46,17 +51,35 @@ const fetchData = async (req, res) => {
     }
     // console.log(result);
     if (reportType === "total-miles-driven") {
-      res.json(result);
+      res
+        .status(200)
+        .json({
+          message: "Total Miles Driven Report",
+          data: result,
+          columns: ["Date", "Total Miles Driven"],
+        });
     } else if (reportType === "energy-consumption") {
       Object.keys(result).forEach((date) => {
         result[date] = result[date] * 0.3;
       });
-      res.status(200).json({ message: "Energy consumption report", data: result});
+      res
+        .status(200)
+        .json({
+          message: "Energy consumption report",
+          data: result,
+          columns: ["Date", "Energy Consumption(kWh)"],
+        });
     } else if (reportType === "cost-analysis") {
       Object.keys(result).forEach((date) => {
         result[date] = result[date] * 0.3 * 0.1;
       });
-      res.status(200).json({ message: "Cost analysis report", data: result});
+      res
+        .status(200)
+        .json({
+          message: "Cost analysis report",
+          data: result,
+          columns: ["Date", "Cost Analysis($)"],
+        });
     } else {
       res.status(400).json({ message: "Invalid report type" });
     }
@@ -66,17 +89,13 @@ const fetchData = async (req, res) => {
   }
 };
 
-
 function aggregateTotalMilesDaily(data) {
   const dailyTotal = {};
 
-   data.forEach((vehicle) => {
-    // console.log(vehicle.date);
-     const date =  vehicle.date.toString().split(" ").slice(0, 4).join(" ");
-    //  console.log("date",vehicle.date.toString());
-    // console.log("date",date);
+  data.forEach((vehicle) => {
+    const date = vehicle.date.toString().split(" ").slice(0, 4).join(" ");
+
     dailyTotal[date] = (dailyTotal[date] || 0) + (vehicle.milesDriven || 0);
-    // console.log(dailyTotal[date]);
   });
 
   return dailyTotal;
@@ -87,8 +106,8 @@ function aggregateTotalMilesMonthly(data) {
 
   data.forEach((vehicle) => {
     var yearMonth = vehicle.date.toString().split(" ");
-    const year=yearMonth[3];
-    const month=yearMonth[1];
+    const year = yearMonth[3];
+    const month = yearMonth[1];
     yearMonth = year + "-" + month;
     monthlyTotal[yearMonth] =
       (monthlyTotal[yearMonth] || 0) + (vehicle.milesDriven || 0);

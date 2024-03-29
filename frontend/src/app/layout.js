@@ -3,6 +3,7 @@ import "./globals.css";
 import SideBar from "./components/sidebar";
 // import  ThemeProvider  from "@/components/themeProvider";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
+import { ThemeProvider } from "@/components/themeProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -15,14 +16,14 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={inter.className}>
-        <div className="flex  justify-start h-full">
-          <div className="w-1/6">
-            <SideBar />
-          </div>
-          <div className="mx-auto w-5/6 p-4 bg-black">
-            <>{children}</>;
-          </div>
-        </div>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="dark"
+          enableSystem={true}
+          disableTransitionOnChange
+        >
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );
