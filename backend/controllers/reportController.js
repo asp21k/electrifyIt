@@ -88,7 +88,74 @@ const fetchData = async (req, res) => {
     res.status(500).json({ message: error.message, success: false });
   }
 };
+const fetchDataB = async (req, res) => {
+  try {
+    const { reportType, frequency, fromDate, toDate } = req.query;
+    console.log(req.query);
 
+    let filter = {};
+
+    if (fromDate && toDate) {
+      filter.date = {
+        $gte: new Date(fromDate),
+        $lte: new Date(toDate),
+      };
+    }
+
+    let data;
+
+    data = await Vehicle.find(filter);
+    let result = [];
+
+    if (frequency === "daily") {
+      result = aggregateTotalMilesDaily(data);
+    } else if (frequency === "monthly") {
+      result = aggregateTotalMilesMonthly(data);
+    } else if (frequency === "yearly") {
+      result = aggregateTotalMilesYearly(data);
+    }
+
+    if (reportType === "total-miles-driven") {
+      const resultDates = Object.keys(result);
+      const resultValues = Object.values(result);
+      res.status(200).json({
+        message: "Total Miles Driven Report",
+        data: {
+          "result date": resultDates,
+          result: resultValues,
+        },
+        columns: ["Date", "Total Miles Driven"],
+      });
+    } else if (reportType === "energy-consumption") {
+      const resultDates = Object.keys(result);
+      const resultValues = Object.values(result).map((value) => value * 0.3);
+      res.status(200).json({
+        message: "Energy consumption report",
+        data: {
+          "result date": resultDates,
+          result: resultValues,
+        },
+        columns: ["Date", "Energy Consumption(kWh)"],
+      });
+    } else if (reportType === "cost-analysis") {
+      const resultDates = Object.keys(result);
+      const resultValues = Object.values(result).map((value) => value * 0.3 * 0.1);
+      res.status(200).json({
+        message: "Cost analysis report",
+        data: {
+          "result date": resultDates,
+          result: resultValues,
+        },
+        columns: ["Date", "Cost Analysis($)"],
+      });
+    } else {
+      res.status(400).json({ message: "Invalid report type" });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: error.message, success: false });
+  }
+};
 function aggregateTotalMilesDaily(data) {
   const dailyTotal = {};
 
@@ -127,4 +194,4 @@ function aggregateTotalMilesYearly(data) {
   return yearlyTotal;
 }
 
-module.exports = { getAllData, fetchData };
+module.exports = { getAllData, fetchData, fetchDataB};
