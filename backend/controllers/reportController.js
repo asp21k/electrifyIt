@@ -51,35 +51,29 @@ const fetchData = async (req, res) => {
     }
     // console.log(result);
     if (reportType === "total-miles-driven") {
-      res
-        .status(200)
-        .json({
-          message: "Total Miles Driven Report",
-          data: result,
-          columns: ["Date", "Total Miles Driven"],
-        });
+      res.status(200).json({
+        message: "Total Miles Driven Report",
+        data: result,
+        columns: ["Date", "Total Miles Driven"],
+      });
     } else if (reportType === "energy-consumption") {
       Object.keys(result).forEach((date) => {
         result[date] = result[date] * 0.3;
       });
-      res
-        .status(200)
-        .json({
-          message: "Energy consumption report",
-          data: result,
-          columns: ["Date", "Energy Consumption(kWh)"],
-        });
+      res.status(200).json({
+        message: "Energy consumption report",
+        data: result,
+        columns: ["Date", "Energy Consumption(kWh)"],
+      });
     } else if (reportType === "cost-analysis") {
       Object.keys(result).forEach((date) => {
         result[date] = result[date] * 0.3 * 0.1;
       });
-      res
-        .status(200)
-        .json({
-          message: "Cost analysis report",
-          data: result,
-          columns: ["Date", "Cost Analysis($)"],
-        });
+      res.status(200).json({
+        message: "Cost analysis report",
+        data: result,
+        columns: ["Date", "Cost Analysis($)"],
+      });
     } else {
       res.status(400).json({ message: "Invalid report type" });
     }
@@ -118,35 +112,39 @@ const fetchDataB = async (req, res) => {
     if (reportType === "total-miles-driven") {
       const resultDates = Object.keys(result);
       const resultValues = Object.values(result);
+      const formattedData = resultDates.map((date, index) => ({
+        result_date: date,
+        result_value: resultValues[index],
+      }));
+      // console.log(formattedData);
       res.status(200).json({
         message: "Total Miles Driven Report",
-        data: {
-          "result date": resultDates,
-          result: resultValues,
-        },
-        columns: ["Date", "Total Miles Driven"],
+        data: formattedData,
       });
     } else if (reportType === "energy-consumption") {
       const resultDates = Object.keys(result);
       const resultValues = Object.values(result).map((value) => value * 0.3);
+      const formattedData = resultDates.map((date, index) => ({
+        result_date: date,
+        result_value: resultValues[index],
+      }));
       res.status(200).json({
         message: "Energy consumption report",
-        data: {
-          "result date": resultDates,
-          result: resultValues,
-        },
-        columns: ["Date", "Energy Consumption(kWh)"],
+        data: formattedData,
       });
     } else if (reportType === "cost-analysis") {
       const resultDates = Object.keys(result);
-      const resultValues = Object.values(result).map((value) => value * 0.3 * 0.1);
+      const resultValues = Object.values(result).map(
+        (value) => value * 0.3 * 0.1
+      );
+      const formattedData = resultDates.map((date, index) => ({
+        result_date: date,
+        result_value: resultValues[index],
+      }));
+      // console.log(formattedData);
       res.status(200).json({
         message: "Cost analysis report",
-        data: {
-          "result date": resultDates,
-          result: resultValues,
-        },
-        columns: ["Date", "Cost Analysis($)"],
+        data: formattedData,
       });
     } else {
       res.status(400).json({ message: "Invalid report type" });
@@ -156,6 +154,7 @@ const fetchDataB = async (req, res) => {
     res.status(500).json({ message: error.message, success: false });
   }
 };
+
 function aggregateTotalMilesDaily(data) {
   const dailyTotal = {};
 
@@ -194,4 +193,4 @@ function aggregateTotalMilesYearly(data) {
   return yearlyTotal;
 }
 
-module.exports = { getAllData, fetchData, fetchDataB};
+module.exports = { getAllData, fetchData, fetchDataB };
